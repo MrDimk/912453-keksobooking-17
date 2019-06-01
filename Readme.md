@@ -1,7 +1,7 @@
 # Личный проект «Кексобукинг» [![Build status][travis-image]][travis-url]
 
 * Студент: [Dmitriy Kozlov](https://up.htmlacademy.ru/javascript/17/user/912453).
-* Наставник: `Неизвестно`.
+* Наставник: [Евгений Карпов](https://htmlacademy.ru/profile/id70583).
 
 ---
 
