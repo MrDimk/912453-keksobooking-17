@@ -1,16 +1,30 @@
 'use strict';
 
 (function () {
-  // Объявляем все переменные и константы
+  // Переменные и константы
   var PINS_COUNT = 8;
   var PINS_COORD_Y_MIN = 130;
   var PINS_COORD_Y_MAX = 630;
+  var MAIN_PIN_WIDTH = 65;
+  var MAIN_PIN_HEIGHT = 60 + 22;
   var mapBlock = document.querySelector('.map'); // Блок с картой
   var mapPins = document.querySelector('.map__pins'); // родительский элемент для всех пинов на карте
   var pinTemplate = document //
     .querySelector('#pin')
     .content.querySelector('.map__pin');
   var enumAppartmentType = ['palace', 'flat', 'house', 'bungalo'];
+
+  // Формы и элементы форм
+  var mapPinMain = document.querySelector('.map__pin--main');
+  var addForm = document.querySelector('.ad-form');
+  var mapFilterFields = document.querySelectorAll('.map__filter');
+  var mapFeaturesFieldset = document.querySelector('.map__features');
+  var addFormHeader = document.querySelector('.ad-form-header');
+  var addFormElements = document.querySelectorAll('.ad-form__element');
+  var addressField = document.querySelector('#address');
+
+  // Флаги и состояния
+  var isPageActive = false;
 
   // Возвращает случайный элемент массива
   function getRandomArrayElement(array) {
@@ -58,8 +72,46 @@
     mapPins.appendChild(pinsDocumentFragment);
   }
 
-  mapBlock.classList.remove('map--faded'); // Визуально переводим карту в активное состояние
-  appendPinsFromDataArray(getMockAdsData()); // Выводим пины на карту
+  // Разблокирует формы
+  function enableForms() {
+    var enableElement = function (element) {
+      element.removeAttribute('disabled');
+    };
+    mapBlock.classList.remove('map--faded');
+    addForm.classList.remove('ad-form--disabled');
+    mapFilterFields.forEach(enableElement);
+    mapFeaturesFieldset.removeAttribute('disabled');
+    addFormHeader.removeAttribute('disabled');
+    addFormElements.forEach(enableElement);
+    isPageActive = true;
+  }
+
+  // Возвращает строку с текущими координатами пина в формате "left, top"
+  function getCurrentMainPinPosition() {
+    var coordX = Number(mapPinMain.style.left.slice(0, -2)) + MAIN_PIN_WIDTH / 2;
+    var coordY = Number(mapPinMain.style.top.slice(0, -2)) + MAIN_PIN_HEIGHT;
+    return coordX + ', ' + coordY;
+  }
+
+  // Обработчики событий
+  function onMainPinClick(evt) {
+    evt.preventDefault();
+    if (!isPageActive) {
+      enableForms(); // Активируем формы
+      appendPinsFromDataArray(getMockAdsData()); // Выводим пины на карту
+    }
+  }
+
+  function onMainPinMouseUp(evt) {
+    evt.preventDefault();
+    addressField.value = getCurrentMainPinPosition();
+  }
+
+  // Назначаем обработчики элементам
+  mapPinMain.addEventListener('click', onMainPinClick);
+  mapPinMain.addEventListener('mouseup', onMainPinMouseUp);
+
+  addressField.value = getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
 })();
 
 // EOF
