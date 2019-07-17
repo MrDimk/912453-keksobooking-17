@@ -72,24 +72,42 @@
     mapPins.appendChild(pinsDocumentFragment);
   }
 
+  // Разблокирует элемент формы
+  var enableElement = function (element) {
+    element.removeAttribute('disabled');
+  };
+
+  // Блокирует элемент формы
+  var disableElement = function (element) {
+    element.setAttribute('disabled');
+  };
+
   // Разблокирует формы
   function enableForms() {
-    var enableElement = function (element) {
-      element.removeAttribute('disabled');
-    };
     mapBlock.classList.remove('map--faded');
     addForm.classList.remove('ad-form--disabled');
     mapFilterFields.forEach(enableElement);
-    mapFeaturesFieldset.removeAttribute('disabled');
-    addFormHeader.removeAttribute('disabled');
+    enableElement(mapFeaturesFieldset);
+    enableElement(addFormHeader);
     addFormElements.forEach(enableElement);
     isPageActive = true;
   }
 
+  // Блокирует формы
+  function disableForms() {
+    mapBlock.classList.add('map--faded');
+    addForm.classList.add('ad-form--disabled');
+    mapFilterFields.forEach(disableElement);
+    disableElement(mapFeaturesFieldset);
+    disableElement(addFormHeader);
+    addFormElements.forEach(disableElement);
+    isPageActive = false;
+  }
+
   // Возвращает строку с текущими координатами пина в формате "left, top"
   function getCurrentMainPinPosition() {
-    var coordX = Number(mapPinMain.style.left.slice(0, -2)) + MAIN_PIN_WIDTH / 2;
-    var coordY = Number(mapPinMain.style.top.slice(0, -2)) + MAIN_PIN_HEIGHT;
+    var coordX = mapPinMain.offsetLeft + MAIN_PIN_WIDTH / 2;
+    var coordY = mapPinMain.offsetTop + MAIN_PIN_HEIGHT;
     return coordX + ', ' + coordY;
   }
 
@@ -106,6 +124,8 @@
     evt.preventDefault();
     addressField.value = getCurrentMainPinPosition();
   }
+
+  disableForms(); // Пока вхолостую, чтобы линтер не ругался
 
   // Назначаем обработчики элементам
   mapPinMain.addEventListener('click', onMainPinClick);
