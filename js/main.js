@@ -7,6 +7,12 @@
   var PINS_COORD_Y_MAX = 630;
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 60 + 22;
+  var MIN_PRICE = {
+    'bungalo': 0,
+    'flat': 1000,
+    'house': 5000,
+    'palace': 10000
+  };
   var mapBlock = document.querySelector('.map'); // Блок с картой
   var mapPins = document.querySelector('.map__pins'); // родительский элемент для всех пинов на карте
   var pinTemplate = document //
@@ -22,6 +28,10 @@
   var addFormHeader = document.querySelector('.ad-form-header');
   var addFormElements = document.querySelectorAll('.ad-form__element');
   var addressField = document.querySelector('#address');
+  var priceField = document.querySelector('#price');
+  var typeField = document.querySelector('#type');
+  var timeinField = document.querySelector('#timein');
+  var timeoutField = document.querySelector('#timeout');
 
   // Флаги и состояния
   var isPageActive = false;
@@ -125,11 +135,35 @@
     addressField.value = getCurrentMainPinPosition();
   }
 
-  disableForms(); // Пока вхолостую, чтобы линтер не ругался
+  function onTypeChange(evt) {
+    evt.preventDefault();
+    setMinPriceByType();
+  }
+
+  function onTimeinTimeoutChange(evt) {
+    evt.preventDefault();
+    timeinField.value = evt.target.value;
+    timeoutField.value = evt.target.value;
+  }
+
+  // Устанавливает минимальную стоимость жилья
+  function setMinPriceByType() {
+    var type = typeField.value;
+    priceField.setAttribute('min', MIN_PRICE[type]);
+  }
+
+  if (isPageActive) {
+    disableForms(); // Пока вхолостую, чтобы линтер не ругался
+  }
+
+  setMinPriceByType();
 
   // Назначаем обработчики элементам
   mapPinMain.addEventListener('click', onMainPinClick);
   mapPinMain.addEventListener('mouseup', onMainPinMouseUp);
+  typeField.addEventListener('change', onTypeChange);
+  timeinField.addEventListener('change', onTimeinTimeoutChange);
+  timeoutField.addEventListener('change', onTimeinTimeoutChange);
 
   addressField.value = getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
 })();
