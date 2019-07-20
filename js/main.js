@@ -140,16 +140,19 @@
     setMinPriceByType();
   }
 
-  function onTimeinTimeoutChange(evt) {
+  function onTimeoutChange(evt) {
     evt.preventDefault();
     timeinField.value = evt.target.value;
+  }
+
+  function onTimeinChange(evt) {
+    evt.preventDefault();
     timeoutField.value = evt.target.value;
   }
 
   // Устанавливает минимальную стоимость жилья
   function setMinPriceByType() {
-    var type = typeField.value;
-    priceField.setAttribute('min', MIN_PRICE[type]);
+    priceField.setAttribute('min', MIN_PRICE[typeField.value]);
   }
 
   if (isPageActive) {
@@ -162,8 +165,8 @@
   mapPinMain.addEventListener('click', onMainPinClick);
   mapPinMain.addEventListener('mouseup', onMainPinMouseUp);
   typeField.addEventListener('change', onTypeChange);
-  timeinField.addEventListener('change', onTimeinTimeoutChange);
-  timeoutField.addEventListener('change', onTimeinTimeoutChange);
+  timeinField.addEventListener('change', onTimeinChange);
+  timeoutField.addEventListener('change', onTimeoutChange);
 
   addressField.value = getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
 })();
