@@ -3,10 +3,12 @@
 (function () {
   // Переменные и константы
   var PINS_COUNT = 8;
-  var PINS_COORD_Y_MIN = 130;
-  var PINS_COORD_Y_MAX = 630;
-  var MAIN_PIN_WIDTH = 65;
-  var MAIN_PIN_HEIGHT = 60 + 22;
+  window.main = {
+    PINS_COORD_Y_MIN: 130,
+    PINS_COORD_Y_MAX: 630,
+    MAIN_PIN_WIDTH: 65,
+    MAIN_PIN_HEIGHT: 60 + 22
+  };
   var MIN_PRICE = {
     'bungalo': 0,
     'flat': 1000,
@@ -34,7 +36,7 @@
   var timeoutField = document.querySelector('#timeout');
 
   // Флаги и состояния
-  var isPageActive = false;
+  window.main.isPageActive = false;
 
   // Возвращает случайный элемент массива
   function getRandomArrayElement(array) {
@@ -56,7 +58,7 @@
         },
         location: {
           x: Math.round(Math.random() * mapBlock.offsetWidth),
-          y: Math.round(Math.random() * (PINS_COORD_Y_MAX - PINS_COORD_Y_MIN) + PINS_COORD_Y_MIN)
+          y: Math.round(Math.random() * (window.main.PINS_COORD_Y_MAX - window.main.PINS_COORD_Y_MIN) + window.main.PINS_COORD_Y_MIN)
         }
       };
     }
@@ -93,47 +95,46 @@
   };
 
   // Разблокирует формы
-  function enableForms() {
+  window.main.enableForms = function () {
     mapBlock.classList.remove('map--faded');
     addForm.classList.remove('ad-form--disabled');
     mapFilterFields.forEach(enableElement);
     enableElement(mapFeaturesFieldset);
     enableElement(addFormHeader);
     addFormElements.forEach(enableElement);
-    isPageActive = true;
-  }
+    appendPinsFromDataArray(getMockAdsData()); // Выводим пины на карту
+    window.main.isPageActive = true;
+  };
 
   // Блокирует формы
-  function disableForms() {
+  window.main.disableForms = function () {
     mapBlock.classList.add('map--faded');
     addForm.classList.add('ad-form--disabled');
     mapFilterFields.forEach(disableElement);
     disableElement(mapFeaturesFieldset);
     disableElement(addFormHeader);
     addFormElements.forEach(disableElement);
-    isPageActive = false;
-  }
+    window.main.isPageActive = false;
+  };
 
   // Возвращает строку с текущими координатами пина в формате "left, top"
-  function getCurrentMainPinPosition() {
-    var coordX = mapPinMain.offsetLeft + MAIN_PIN_WIDTH / 2;
-    var coordY = mapPinMain.offsetTop + MAIN_PIN_HEIGHT;
+  window.main.getCurrentMainPinPosition = function () {
+    var coordX = mapPinMain.offsetLeft + window.main.MAIN_PIN_WIDTH / 2;
+    var coordY = mapPinMain.offsetTop + window.main.MAIN_PIN_HEIGHT;
     return coordX + ', ' + coordY;
+  };
+
+  // Записывает текущие координаты главной метки в поле "Адрес" формы
+  window.main.setMainPinAddress = function (address) {
+    addressField.value = address;
+  };
+
+  // Устанавливает минимальную стоимость жилья
+  function setMinPriceByType() {
+    priceField.setAttribute('min', MIN_PRICE[typeField.value]);
   }
 
   // Обработчики событий
-  function onMainPinClick(evt) {
-    evt.preventDefault();
-    if (!isPageActive) {
-      enableForms(); // Активируем формы
-      appendPinsFromDataArray(getMockAdsData()); // Выводим пины на карту
-    }
-  }
-
-  function onMainPinMouseUp(evt) {
-    evt.preventDefault();
-    addressField.value = getCurrentMainPinPosition();
-  }
 
   function onTypeChange(evt) {
     evt.preventDefault();
@@ -150,25 +151,14 @@
     timeoutField.value = evt.target.value;
   }
 
-  // Устанавливает минимальную стоимость жилья
-  function setMinPriceByType() {
-    priceField.setAttribute('min', MIN_PRICE[typeField.value]);
-  }
-
-  if (isPageActive) {
-    disableForms(); // Пока вхолостую, чтобы линтер не ругался
-  }
-
-  setMinPriceByType();
-
   // Назначаем обработчики элементам
-  mapPinMain.addEventListener('click', onMainPinClick);
-  mapPinMain.addEventListener('mouseup', onMainPinMouseUp);
   typeField.addEventListener('change', onTypeChange);
   timeinField.addEventListener('change', onTimeinChange);
   timeoutField.addEventListener('change', onTimeoutChange);
 
-  addressField.value = getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
+  // Инициализация формы
+  setMinPriceByType(); // Устанавливаем ограничение стоимости жилья
+  addressField.value = window.main.getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
 })();
 
 // EOF
