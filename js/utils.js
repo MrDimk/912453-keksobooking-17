@@ -19,10 +19,26 @@
     element.setAttribute('disabled');
   };
 
+  function showError(message, onButtonPress, buttonText) {
+    var errorBlock = document.createDocumentFragment();
+    var mainBlock = document.querySelector('main');
+    errorBlock.appendChild(document.querySelector('#error').content.cloneNode(true));
+    errorBlock.querySelector('.error__message').innerText = message;
+    var button = errorBlock.querySelector('.error__button');
+    button.innerText = buttonText;
+    button.addEventListener('click', function (evt) {
+      evt.preventDefault();
+      mainBlock.removeChild(mainBlock.querySelector('.error'));
+      onButtonPress();
+    });
+    mainBlock.appendChild(errorBlock);
+  }
+
   window.utils = {
     getRandomArrayElement: getRandomArrayElement,
     enableElement: enableElement,
     disableElement: disableElement,
+    showError: showError,
     settings: {
       isPageActive: isPageActive
     }

@@ -10,15 +10,13 @@
   var MAIN_PIN_HEIGHT = window.map.settings.MAIN_PIN_HEIGHT;
   var enableForms = window.addForm.enableForms;
   var activateMap = window.map.activateMap;
-  var appendPinsFromDataArray = window.map.appendPinsFromDataArray;
-  var getMockAdsData = window.data.getMockAdsData;
 
   var MAX_X = map.offsetWidth;
   var MAX_Y = map.offsetHeight;
 
   window.addEventListener('resize', function (evt) {
     evt.preventDefault();
-    window.dragAndDrop.maxX = map.mapBlock.offsetWidth;
+    MAX_X = window.map.mapBlock.offsetWidth;
   });
 
   pin.addEventListener('mousedown', function (evt) {
@@ -36,9 +34,9 @@
       dragged = true;
 
       if (!window.utils.settings.isPageActive) {
-        activateMap(); // Активируем карту
-        enableForms(); // Активируем формы
-        appendPinsFromDataArray(getMockAdsData()); // Выводим пины на карту
+        activateMap();
+        enableForms();
+        window.data.loadPins();
       }
 
       var shift = {
