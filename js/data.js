@@ -10,7 +10,7 @@
   };
 
   // Возвращает массив mock-объектов, соответствующих по сруктуре данных реальным объявлениям
-  function loadPins() {
+  function loadPins(url, onSuccess, onFail) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.open('GET', URL);
@@ -18,22 +18,33 @@
       evt.preventDefault();
       switch (xhr.status) {
         case 200:
-          window.map.appendPinsFromDataArray(xhr.response);
+          onSuccess(xhr.response);
           break;
         default:
-          window.utils.showError(
-              'Что-то пошло не так, пришел ответ со статусом: ' + xhr.status,
-              loadPins,
-              'Попробуй еще разок'
-          );
+          onFail(xhr.status);
       }
     });
     xhr.send();
   }
 
+  function onLoadFail(status) {
+    window.utils.showError(
+        'Что-то пошло не так' + (status ? ', пришел ответ со статусом: ' + status : ''),
+        function () {
+          window.data.loadPins(
+              window.data.URL,
+              window.map.appendPinsFromDataArray,
+              window.data.onLoadFail
+          );
+        },
+        'Попробуй еще разок'
+    );
+  }
+
   window.data = {
     MIN_PRICE: MIN_PRICE,
-    loadPins: loadPins
+    loadPins: loadPins,
+    onLoadFail: onLoadFail
   };
 })();
 

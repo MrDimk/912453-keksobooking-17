@@ -36,7 +36,7 @@
       if (!window.utils.settings.isPageActive) {
         activateMap();
         enableForms();
-        window.data.loadPins();
+        window.data.loadPins(window.data.URL, window.map.appendPinsFromDataArray, window.data.onLoadFail);
       }
 
       var shift = {
