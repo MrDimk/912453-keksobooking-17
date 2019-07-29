@@ -2,7 +2,7 @@
 
 (function () {
   // Import
-  var MIN_PRICE = window.data.MIN_PRICE;
+  var MIN_PRICE = window.filters.MIN_PRICE;
   var enableElement = window.utils.enableElement;
   var disableElement = window.utils.disableElement;
 

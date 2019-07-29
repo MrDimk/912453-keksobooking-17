@@ -3,6 +3,12 @@
 (function () {
   var filtersForm = document.querySelector('.map__filters');
   var displayedPinsNumber = 5;
+  var MIN_PRICE = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
 
   // Типы фильтров и функции-обработчики для каждого из них
   var filterTypes = {
@@ -18,8 +24,8 @@
 
   // Применение фильтров - для каждого элемента формы ищем по имени обработчик,
   // если не находим - массив с данными не модифицируем
-  function applyFilters(data) {
-    var result = data.slice();
+  function apply() {
+    var result = window.data.adsDataArray.slice();
     Array.from(filtersForm).forEach(function (formElement) {
       try {
         result = filterTypes[formElement.name](result, formElement);
@@ -34,10 +40,11 @@
 
   filtersForm.addEventListener('change', function (evt) {
     evt.preventDefault();
-    applyFilters(window.data.adsDataArray);
+    apply();
   });
 
   window.filters = {
-    applyFilters: applyFilters
+    MIN_PRICE: MIN_PRICE,
+    apply: apply
   };
 })();

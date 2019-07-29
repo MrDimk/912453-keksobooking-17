@@ -34,9 +34,9 @@
       dragged = true;
 
       if (!window.utils.settings.isPageActive) {
+        window.backend.load(window.data.onAdsDataLoad, window.data.onLoadFail);
         activateMap();
         enableForms();
-        window.data.loadPins(window.data.URL, window.data.onAdsDataLoad, window.data.onLoadFail);
       }
 
       var shift = {
