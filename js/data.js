@@ -2,6 +2,7 @@
 
 (function () {
   var URL = 'https://js.dump.academy/keksobooking/data';
+  var adsDataArray;
   var MIN_PRICE = {
     bungalo: 0,
     flat: 1000,
@@ -9,7 +10,7 @@
     palace: 10000
   };
 
-  // Возвращает массив mock-объектов, соответствующих по сруктуре данных реальным объявлениям
+  // Запрашивает по заданному URL данные в формате JSON, вызывает обработчики по обстоятельствам
   function loadPins(url, onSuccess, onFail) {
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
@@ -25,6 +26,11 @@
       }
     });
     xhr.send();
+  }
+
+  function onAdsDataLoad(loadedDataArray) {
+    window.data.adsDataArray = loadedDataArray.slice();
+    window.filters.applyFilters(loadedDataArray);
   }
 
   function onLoadFail(status) {
@@ -44,6 +50,8 @@
   window.data = {
     MIN_PRICE: MIN_PRICE,
     loadPins: loadPins,
+    adsDataArray: adsDataArray,
+    onAdsDataLoad: onAdsDataLoad,
     onLoadFail: onLoadFail
   };
 })();
