@@ -38,6 +38,16 @@
     mapPins.appendChild(pinsDocumentFragment);
   }
 
+  function removePinsFromMap() {
+    var otherPins = Array.from(mapPins.querySelectorAll('.map__pin')).filter(function (pin) {
+      return !pin.classList.contains('map__pin--main');
+    });
+
+    otherPins.forEach(function (pin) {
+      pin.remove();
+    });
+  }
+
   // Возвращает строку с текущими координатами пина в формате "left, top"
   function getCurrentMainPinPosition() {
     var coordX = mapPinMain.offsetLeft + MAIN_PIN_WIDTH / 2;
@@ -64,6 +74,7 @@
     deactivateMap: deactivateMap,
     getCurrentMainPinPosition: getCurrentMainPinPosition,
     appendPinsFromDataArray: appendPinsFromDataArray,
+    removePinsFromMap: removePinsFromMap,
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
     settings: {

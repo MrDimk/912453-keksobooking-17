@@ -23,9 +23,9 @@
     var errorBlock = document.createDocumentFragment();
     var mainBlock = document.querySelector('main');
     errorBlock.appendChild(document.querySelector('#error').content.cloneNode(true));
-    errorBlock.querySelector('.error__message').innerText = message;
+    errorBlock.querySelector('.error__message').textContent = message;
     var button = errorBlock.querySelector('.error__button');
-    button.innerText = buttonText;
+    button.textContent = buttonText;
     button.addEventListener('click', function (evt) {
       evt.preventDefault();
       mainBlock.removeChild(mainBlock.querySelector('.error'));

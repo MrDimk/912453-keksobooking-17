@@ -1,39 +1,27 @@
 'use strict';
 
 (function () {
-  var URL = 'https://js.dump.academy/keksobooking/data';
-  var MIN_PRICE = {
-    bungalo: 0,
-    flat: 1000,
-    house: 5000,
-    palace: 10000
-  };
+  var adsDataArray;
 
-  // Возвращает массив mock-объектов, соответствующих по сруктуре данных реальным объявлениям
-  function loadPins() {
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.open('GET', URL);
-    xhr.addEventListener('load', function (evt) {
-      evt.preventDefault();
-      switch (xhr.status) {
-        case 200:
-          window.map.appendPinsFromDataArray(xhr.response);
-          break;
-        default:
-          window.utils.showError(
-              'Что-то пошло не так, пришел ответ со статусом: ' + xhr.status,
-              loadPins,
-              'Попробуй еще разок'
-          );
-      }
-    });
-    xhr.send();
+  function onAdsDataLoad(loadedDataArray) {
+    window.data.adsDataArray = loadedDataArray;
+    window.filters.apply();
+  }
+
+  function onLoadFail(status) {
+    window.utils.showError(
+        'Что-то пошло не так' + (status ? ', пришел ответ со статусом: ' + status : ''),
+        function () {
+          window.backend.load(window.data.onAdsDataLoad, window.data.onLoadFail);
+        },
+        'Попробуй еще разок'
+    );
   }
 
   window.data = {
-    MIN_PRICE: MIN_PRICE,
-    loadPins: loadPins
+    adsDataArray: adsDataArray,
+    onAdsDataLoad: onAdsDataLoad,
+    onLoadFail: onLoadFail
   };
 })();
 
