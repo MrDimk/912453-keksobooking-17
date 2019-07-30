@@ -17,7 +17,7 @@
     },
     'housing-type': function (data, formElement) {
       return data.filter(function (element) {
-        return formElement.value === 'any' ? true : element.offer.type === formElement.value;
+        return formElement.value === 'any' || element.offer.type === formElement.value;
       });
     }
   };
