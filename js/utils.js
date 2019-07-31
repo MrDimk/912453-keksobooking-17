@@ -34,11 +34,31 @@
     mainBlock.appendChild(errorBlock);
   }
 
+  function roomsToString(rooms) {
+    if (rooms === 1) {
+      return '1 комната';
+    } else if (rooms < 5) {
+      return rooms + ' комнаты';
+    } else {
+      return rooms + ' комнат';
+    }
+  }
+
+  function guestsToString(guests) {
+    if (guests === 1) {
+      return '1 гостя';
+    } else {
+      return guests + ' гостей';
+    }
+  }
+
   window.utils = {
     getRandomArrayElement: getRandomArrayElement,
     enableElement: enableElement,
     disableElement: disableElement,
     showError: showError,
+    roomsToString: roomsToString,
+    guestsToString: guestsToString,
     settings: {
       isPageActive: isPageActive
     }

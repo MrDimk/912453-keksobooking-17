@@ -3,12 +3,7 @@
 (function () {
   var filtersForm = document.querySelector('.map__filters');
   var displayedPinsNumber = 5;
-  var MIN_PRICE = {
-    bungalo: 0,
-    flat: 1000,
-    house: 5000,
-    palace: 10000
-  };
+  var activeCard;
 
   // Типы фильтров и функции-обработчики для каждого из них
   var filterTypes = {
@@ -36,6 +31,11 @@
     });
     window.map.removePinsFromMap();
     window.map.appendPinsFromDataArray(filterTypes['number'](result)); // фильтр по количеству может быть легко добавлен в форму
+
+    if (activeCard) {
+      activeCard.cardNode.remove(); // временный способ не забивать карту при работе фильтра
+    }
+    activeCard = new window.map.Card(result[0]); // на основе первого элемента массива создаем карточку объявления
   }
 
   filtersForm.addEventListener('change', function (evt) {
@@ -44,7 +44,6 @@
   });
 
   window.filters = {
-    MIN_PRICE: MIN_PRICE,
     apply: apply
   };
 })();
