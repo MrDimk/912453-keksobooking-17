@@ -7,11 +7,12 @@
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 60 + 22;
   var OFFER_TYPES = {
-    'flat': 'Квартира',
-    'bungalo': 'Бунгало',
-    'house': 'Дом',
-    'palace': 'Дворец'
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
   };
+  var ESC_KEY = 27;
 
   var mapBlock = document.querySelector('.map'); // Блок с картой
   var mapPins = document.querySelector('.map__pins'); // родительский элемент для всех пинов на карте
@@ -73,7 +74,7 @@
   }
 
   // Объявляем класс для карточки
-  var Card = function (dataObj) {
+  function createCard(dataObj) {
     var newCardNode = cardTemplate.cloneNode(true);
     newCardNode.querySelector('.popup__avatar').src = dataObj.author.avatar;
     newCardNode.querySelector('.popup__title').textContent = dataObj.offer.title;
@@ -81,8 +82,11 @@
     newCardNode.querySelector('.popup__text--price').textContent = dataObj.offer.price;
     newCardNode.querySelector('.popup__type').textContent = OFFER_TYPES[dataObj.offer.type];
     newCardNode.querySelector('.popup__text--capacity').textContent =
-      window.utils.roomsToString(dataObj.offer.rooms) + ' для ' + window.utils.guestsToString(dataObj.offer.guests);
-    newCardNode.querySelector('.popup__text--time').textContent = 'Заезд после ' + dataObj.offer.checkin + ', выезд до ' + dataObj.offer.checkout;
+      window.utils.roomsToString(dataObj.offer.rooms) +
+      ' для ' +
+      window.utils.guestsToString(dataObj.offer.guests);
+    newCardNode.querySelector('.popup__text--time').textContent =
+      'Заезд после ' + dataObj.offer.checkin + ', выезд до ' + dataObj.offer.checkout;
     newCardNode.querySelector('.popup__description').textContent = dataObj.offer.description;
 
     var features = newCardNode.querySelector('.popup__features');
@@ -110,20 +114,28 @@
       photos.appendChild(imgItem);
     });
 
-    var cardDocumentFragment = document.createDocumentFragment();
-    cardDocumentFragment.appendChild(newCardNode);
-    this.cardNode = newCardNode;
-    this.data = dataObj;
-    mapBlock.insertBefore(cardDocumentFragment, mapBlock.querySelector('.map__filters-container'));
-  };
+    newCardNode.querySelector('button.popup__close').addEventListener('click', function (evt) {
+      evt.preventDefault();
+      newCardNode.remove();
+    });
 
-  Card.prototype.hide = function () {
-    this.cardNode.classList.add('hidden');
-  };
+    function onEscPress(evt) {
+      if (evt.keyCode === ESC_KEY) {
+        evt.preventDefault();
+        closeCard();
+      }
+    }
 
-  Card.prototype.show = function () {
-    this.cardNode.classList.remove('hidden');
-  };
+    window.addEventListener('keydown', onEscPress);
+
+    var closeCard = function () {
+      window.removeEventListener('keydown', onEscPress);
+      newCardNode.remove();
+    };
+
+    mapBlock.insertBefore(newCardNode, mapBlock.querySelector('.map__filters-container'));
+    return newCardNode;
+  }
 
   window.map = {
     activateMap: activateMap,
@@ -131,7 +143,7 @@
     getCurrentMainPinPosition: getCurrentMainPinPosition,
     appendPinsFromDataArray: appendPinsFromDataArray,
     removePinsFromMap: removePinsFromMap,
-    Card: Card,
+    createCard: createCard,
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
     settings: {
