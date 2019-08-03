@@ -2,6 +2,7 @@
 
 (function () {
   // Флаги и состояния
+  var ESC_KEY = 27;
   var isPageActive = false;
 
   // Возвращает случайный элемент массива
@@ -16,7 +17,7 @@
 
   // Блокирует элемент формы
   var disableElement = function (element) {
-    element.setAttribute('disabled');
+    element.setAttribute('disabled', 'disabled');
   };
 
   function showError(message, onButtonPress, buttonText) {
@@ -25,13 +26,58 @@
     errorBlock.appendChild(document.querySelector('#error').content.cloneNode(true));
     errorBlock.querySelector('.error__message').textContent = message;
     var button = errorBlock.querySelector('.error__button');
-    button.textContent = buttonText;
+    button.textContent = buttonText ? buttonText : 'Закрыть';
+
     button.addEventListener('click', function (evt) {
       evt.preventDefault();
       mainBlock.removeChild(mainBlock.querySelector('.error'));
-      onButtonPress();
+      if (onButtonPress) {
+        onButtonPress();
+      }
     });
+
     mainBlock.appendChild(errorBlock);
+
+    function onEscPress(evt) {
+      if (evt.keyCode === ESC_KEY) {
+        evt.preventDefault();
+        hideMessage();
+      }
+    }
+
+    window.addEventListener('keydown', onEscPress);
+
+    var hideMessage = function () {
+      window.removeEventListener('keydown', onEscPress);
+      mainBlock.querySelector('.error').remove();
+    };
+  }
+
+  function showSuccessMessage() {
+    var mainBlock = document.querySelector('main');
+    var successBlock = document.querySelector('#success').content.cloneNode(true);
+    mainBlock.appendChild(successBlock);
+
+    function onEscPress(evt) {
+      if (evt.keyCode === ESC_KEY) {
+        evt.preventDefault();
+        hideMessage();
+      }
+    }
+
+    function onClick(evt) {
+      evt.preventDefault();
+      hideMessage();
+    }
+
+    window.addEventListener('keydown', onEscPress);
+    window.addEventListener('click', onClick);
+
+    var hideMessage = function () {
+      window.removeEventListener('keydown', onEscPress);
+      window.removeEventListener('click', onClick);
+      mainBlock.querySelector('.success').remove();
+    };
   }
 
   function roomsToString(rooms) {
@@ -53,10 +99,12 @@
   }
 
   window.utils = {
+    ESC_KEY: ESC_KEY,
     getRandomArrayElement: getRandomArrayElement,
     enableElement: enableElement,
     disableElement: disableElement,
     showError: showError,
+    showSuccessMessage: showSuccessMessage,
     roomsToString: roomsToString,
     guestsToString: guestsToString,
     settings: {

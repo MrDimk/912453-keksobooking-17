@@ -14,12 +14,12 @@
   var addFormElements = document.querySelectorAll('.ad-form__element');
   var addressField = document.querySelector('#address');
   var priceField = document.querySelector('#price');
+  // var titleField = document.querySelector('#title');
   var typeField = document.querySelector('#type');
   var timeinField = document.querySelector('#timein');
   var timeoutField = document.querySelector('#timeout');
   var roomsField = document.querySelector('#room_number');
   var guestsField = document.querySelector('#capacity');
-  var submitBtn = addForm.querySelector('.ad-form__submit');
 
   // Разблокирует формы
   function enableForms() {
@@ -75,7 +75,9 @@
 
   function checkCapacityValidity() {
     if (Number(roomsField.value) < Number(guestsField.value)) {
-      roomsField.setCustomValidity('Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value));
+      roomsField.setCustomValidity(
+          'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value)
+      );
       return false;
     }
     if (Number(roomsField.value) === 100 && guestsField.value > 0) {
@@ -86,22 +88,44 @@
     return true;
   }
 
-  function onSubmitClick() {
-    checkCapacityValidity();
+  function resetForm() {
+    addForm.querySelectorAll('input').forEach(function (input) {
+      if (input.type === 'checkbox') {
+        input.checked = false;
+      } else {
+        input.value = '';
+      }
+    });
+  }
+
+  function onSubmit(evt) {
+    evt.preventDefault();
+    setMinPriceByType(); // Устанавливаем ограничение стоимости жилья
+    if (checkCapacityValidity()) {
+      window.backend.send(new FormData(addForm), onSendSuccess, onSendError);
+    }
+  }
+
+  function onSendSuccess() {
+    resetForm();
+    window.map.resetMap(); // удалить метки и карточку
+    window.utils.showSuccessMessage(); // показать сообщение об успехе
+  }
+
+  function onSendError() {
+    window.utils.showError('Ошибка отправки формы');// сообщегие об ошибке
   }
 
   // Назначаем обработчики элементам
   typeField.addEventListener('change', onTypeChange);
   timeinField.addEventListener('change', onTimeinChange);
   timeoutField.addEventListener('change', onTimeoutChange);
-  timeoutField.addEventListener('change', onTimeoutChange);
   roomsField.addEventListener('change', onRoomsChange);
   guestsField.addEventListener('change', onGuestsChange);
-  submitBtn.addEventListener('click', onSubmitClick);
+  addForm.addEventListener('submit', onSubmit);
 
   // Инициализация формы
-  setMinPriceByType(); // Устанавливаем ограничение стоимости жилья
-  addressField.value = window.map.getCurrentMainPinPosition(); // Заполняем поле адреса координатами середины главной метки
+  setMainPinAddress(window.map.getCurrentMainPinPosition()); // Заполняем поле адреса координатами середины главной метки
 
   // Экспорт
   window.addForm = {
