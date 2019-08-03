@@ -2,6 +2,10 @@
 
 (function () {
   // Переменные и константы
+  var DEFAULT_MAIN_PIN_COORDS = {
+    x: '602',
+    y: '375'
+  };
   var PINS_COORD_Y_MIN = 130;
   var PINS_COORD_Y_MAX = 630;
   var MAIN_PIN_WIDTH = 65;
@@ -12,7 +16,6 @@
     house: 'Дом',
     palace: 'Дворец'
   };
-  var ESC_KEY = 27;
   var activeCard;
 
   var mapBlock = document.querySelector('.map'); // Блок с картой
@@ -71,6 +74,21 @@
     var coordX = mapPinMain.offsetLeft + MAIN_PIN_WIDTH / 2;
     var coordY = mapPinMain.offsetTop + MAIN_PIN_HEIGHT;
     return coordX + ', ' + coordY;
+  }
+
+  function setMainPinPosition(x, y) {
+    mapPinMain.style.left = x + 'px';
+    mapPinMain.style.top = y + 'px';
+  }
+
+  function resetMap() {
+    removePinsFromMap();
+    setMainPinPosition(DEFAULT_MAIN_PIN_COORDS.x, DEFAULT_MAIN_PIN_COORDS.y);
+    if (activeCard) {
+      activeCard.remove();
+    }
+    deactivateMap();
+    window.utils.settings.isPageActive = false;
   }
 
   // Активирует карту
@@ -134,7 +152,7 @@
     });
 
     function onEscPress(evt) {
-      if (evt.keyCode === ESC_KEY) {
+      if (evt.keyCode === window.utils.ESC_KEY) {
         evt.preventDefault();
         closeCard();
       }
@@ -160,6 +178,8 @@
     createCard: createCard,
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
+    resetMap: resetMap,
+    activeCard: activeCard,
     settings: {
       PINS_COORD_Y_MIN: PINS_COORD_Y_MIN,
       PINS_COORD_Y_MAX: PINS_COORD_Y_MAX,
