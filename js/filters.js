@@ -3,7 +3,6 @@
 (function () {
   var filtersForm = document.querySelector('.map__filters');
   var displayedPinsNumber = 5;
-  var activeCard;
 
   // Типы фильтров и функции-обработчики для каждого из них
   var filterTypes = {
@@ -31,11 +30,6 @@
     });
     window.map.removePinsFromMap();
     window.map.appendPinsFromDataArray(filterTypes['number'](result)); // фильтр по количеству может быть легко добавлен в форму
-
-    if (activeCard) {
-      activeCard.remove(); // временный способ не забивать карту при работе фильтра
-    }
-    activeCard = window.map.createCard(result[0]); // на основе первого элемента массива создаем карточку объявления
   }
 
   filtersForm.addEventListener('change', function (evt) {

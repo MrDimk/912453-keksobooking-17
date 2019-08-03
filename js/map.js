@@ -13,6 +13,7 @@
     palace: 'Дворец'
   };
   var ESC_KEY = 27;
+  var activeCard;
 
   var mapBlock = document.querySelector('.map'); // Блок с картой
   var mapPins = document.querySelector('.map__pins'); // родительский элемент для всех пинов на карте
@@ -30,7 +31,20 @@
     newPinNode.style.top = pinData.location.y + 'px';
     newPinNode.querySelector('img').src = pinData.author.avatar;
     newPinNode.querySelector('img').alt = pinData.offer.title;
+
+    // Обрабатываем событие focus чтобы исключить повторную отрисовку той же карточки + сделать доступным навигацию по Tab
+    newPinNode.addEventListener('focus', function (evt) {
+      evt.preventDefault();
+      onPinClick(pinData); // делегируем на общий обработчик с данными конкретного объявления
+    });
     return newPinNode;
+  }
+
+  function onPinClick(data) {
+    if (activeCard) {
+      activeCard.remove();
+    }
+    activeCard = createCard(data);
   }
 
   // Добавляет на карту пины на основе данных из массива
