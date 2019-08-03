@@ -1,19 +1,23 @@
 'use strict';
 
 (function () {
-  // Импортируем функции
-  var enableElement = window.utils.enableElement;
-  var disableElement = window.utils.disableElement;
-
   // Переменные и константы
   var PINS_COORD_Y_MIN = 130;
   var PINS_COORD_Y_MAX = 630;
   var MAIN_PIN_WIDTH = 65;
   var MAIN_PIN_HEIGHT = 60 + 22;
+  var OFFER_TYPES = {
+    flat: 'Квартира',
+    bungalo: 'Бунгало',
+    house: 'Дом',
+    palace: 'Дворец'
+  };
+  var ESC_KEY = 27;
 
   var mapBlock = document.querySelector('.map'); // Блок с картой
   var mapPins = document.querySelector('.map__pins'); // родительский элемент для всех пинов на карте
   var pinTemplate = document.querySelector('#pin').content.querySelector('.map__pin');
+  var cardTemplate = document.querySelector('#card').content.querySelector('.map__card');
 
   var mapPinMain = document.querySelector('.map__pin--main');
   var mapFilterFields = document.querySelectorAll('.map__filter');
@@ -58,15 +62,79 @@
   // Активирует карту
   function activateMap() {
     mapBlock.classList.remove('map--faded');
-    mapFilterFields.forEach(enableElement);
-    enableElement(mapFeaturesFieldset);
+    mapFilterFields.forEach(window.utils.enableElement);
+    window.utils.enableElement(mapFeaturesFieldset);
   }
 
   // Деактивирует карту
   function deactivateMap() {
     mapBlock.classList.add('map--faded');
-    mapFilterFields.forEach(disableElement);
-    disableElement(mapFeaturesFieldset);
+    mapFilterFields.forEach(window.utils.disableElement);
+    window.utils.disableElement(mapFeaturesFieldset);
+  }
+
+  // Объявляем класс для карточки
+  function createCard(dataObj) {
+    var newCardNode = cardTemplate.cloneNode(true);
+    newCardNode.querySelector('.popup__avatar').src = dataObj.author.avatar;
+    newCardNode.querySelector('.popup__title').textContent = dataObj.offer.title;
+    newCardNode.querySelector('.popup__text--address').textContent = dataObj.offer.title;
+    newCardNode.querySelector('.popup__text--price').textContent = dataObj.offer.price;
+    newCardNode.querySelector('.popup__type').textContent = OFFER_TYPES[dataObj.offer.type];
+    newCardNode.querySelector('.popup__text--capacity').textContent =
+      window.utils.roomsToString(dataObj.offer.rooms) +
+      ' для ' +
+      window.utils.guestsToString(dataObj.offer.guests);
+    newCardNode.querySelector('.popup__text--time').textContent =
+      'Заезд после ' + dataObj.offer.checkin + ', выезд до ' + dataObj.offer.checkout;
+    newCardNode.querySelector('.popup__description').textContent = dataObj.offer.description;
+
+    var features = newCardNode.querySelector('.popup__features');
+    while (features.firstChild) {
+      features.removeChild(features.firstChild);
+    }
+    dataObj.offer.features.forEach(function (value) {
+      var listItem = document.createElement('li');
+      listItem.classList.add('popup__feature');
+      listItem.classList.add('popup__feature--' + value);
+      features.appendChild(listItem);
+    });
+
+    var photos = newCardNode.querySelector('.popup__photos');
+    while (photos.firstChild) {
+      photos.removeChild(photos.firstChild);
+    }
+    dataObj.offer.photos.forEach(function (value) {
+      var imgItem = document.createElement('img');
+      imgItem.classList.add('popup__photo');
+      imgItem.width = '45';
+      imgItem.height = '40';
+      imgItem.alt = 'Фотография жилья';
+      imgItem.src = value;
+      photos.appendChild(imgItem);
+    });
+
+    newCardNode.querySelector('button.popup__close').addEventListener('click', function (evt) {
+      evt.preventDefault();
+      newCardNode.remove();
+    });
+
+    function onEscPress(evt) {
+      if (evt.keyCode === ESC_KEY) {
+        evt.preventDefault();
+        closeCard();
+      }
+    }
+
+    window.addEventListener('keydown', onEscPress);
+
+    var closeCard = function () {
+      window.removeEventListener('keydown', onEscPress);
+      newCardNode.remove();
+    };
+
+    mapBlock.insertBefore(newCardNode, mapBlock.querySelector('.map__filters-container'));
+    return newCardNode;
   }
 
   window.map = {
@@ -75,6 +143,7 @@
     getCurrentMainPinPosition: getCurrentMainPinPosition,
     appendPinsFromDataArray: appendPinsFromDataArray,
     removePinsFromMap: removePinsFromMap,
+    createCard: createCard,
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
     settings: {

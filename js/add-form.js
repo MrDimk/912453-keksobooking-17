@@ -1,10 +1,12 @@
 'use strict';
 
 (function () {
-  // Import
-  var MIN_PRICE = window.filters.MIN_PRICE;
-  var enableElement = window.utils.enableElement;
-  var disableElement = window.utils.disableElement;
+  var MIN_PRICE = {
+    bungalo: 0,
+    flat: 1000,
+    house: 5000,
+    palace: 10000
+  };
 
   // Формы и элементы форм
   var addForm = document.querySelector('.ad-form');
@@ -19,16 +21,16 @@
   // Разблокирует формы
   function enableForms() {
     addForm.classList.remove('ad-form--disabled');
-    enableElement(addFormHeader);
-    addFormElements.forEach(enableElement);
+    window.utils.enableElement(addFormHeader);
+    addFormElements.forEach(window.utils.enableElement);
     window.utils.settings.isPageActive = true;
   }
 
   // Блокирует формы
   function disableForms() {
     addForm.classList.add('ad-form--disabled');
-    disableElement(addFormHeader);
-    addFormElements.forEach(disableElement);
+    window.utils.disableElement(addFormHeader);
+    addFormElements.forEach(window.utils.disableElement);
     window.main.isPageActive = false;
   }
 
