@@ -65,55 +65,63 @@
 
   function onRoomsChange(evt) {
     evt.preventDefault();
-    checkCapacityValidity();
+    isСapacityValid();
   }
 
   function onGuestsChange(evt) {
     evt.preventDefault();
-    checkCapacityValidity();
+    isСapacityValid();
   }
 
-  function checkCapacityValidity() {
+  function isСapacityValid() {
     if (Number(roomsField.value) < Number(guestsField.value)) {
       roomsField.setCustomValidity(
           'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value)
       );
+      guestsField.setCustomValidity(
+          'Столько гостей и только ' + window.utils.roomsToString(roomsField.value) + ', многовато'
+      );
       return false;
     }
     if (Number(roomsField.value) === 100 && guestsField.value > 0) {
+      guestsField.setCustomValidity('');
       roomsField.setCustomValidity('Данный вариант размещения не для гостей');
       return false;
     }
+    if (Number(guestsField.value) === 0 && Number(roomsField.value) !== 100) {
+      roomsField.setCustomValidity('');
+      guestsField.setCustomValidity('Не для гостей есть специальный варинт размещения');
+      return false;
+    }
     roomsField.setCustomValidity('');
+    guestsField.setCustomValidity('');
     return true;
   }
 
-  function resetForm() {
-    addForm.querySelectorAll('input').forEach(function (input) {
-      if (input.type === 'checkbox') {
-        input.checked = false;
-      } else {
-        input.value = '';
-      }
-    });
+  function isPricingValid() {
+    setMinPriceByType();
+    return priceField.validity;
+  }
+
+  function isFormValid() {
+    return isСapacityValid() && isPricingValid();
   }
 
   function onSubmit(evt) {
     evt.preventDefault();
-    setMinPriceByType(); // Устанавливаем ограничение стоимости жилья
-    if (checkCapacityValidity()) {
+    if (isFormValid()) {
       window.backend.send(new FormData(addForm), onSendSuccess, onSendError);
     }
   }
 
   function onSendSuccess() {
-    resetForm();
+    addForm.reset();
     window.map.resetMap(); // удалить метки и карточку
     window.utils.showSuccessMessage(); // показать сообщение об успехе
   }
 
   function onSendError() {
-    window.utils.showError('Ошибка отправки формы');// сообщегие об ошибке
+    window.utils.showError('Ошибка отправки формы'); // сообщегие об ошибке
   }
 
   // Назначаем обработчики элементам
