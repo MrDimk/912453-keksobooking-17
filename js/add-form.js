@@ -14,7 +14,7 @@
   var addFormElements = document.querySelectorAll('.ad-form__element');
   var addressField = document.querySelector('#address');
   var priceField = document.querySelector('#price');
-  // var titleField = document.querySelector('#title');
+  var titleField = document.querySelector('#title');
   var typeField = document.querySelector('#type');
   var timeinField = document.querySelector('#timein');
   var timeoutField = document.querySelector('#timeout');
@@ -42,15 +42,21 @@
     addressField.value = address;
   }
 
-  // Устанавливает минимальную стоимость жилья
-  function setMinPriceByType() {
-    priceField.setAttribute('min', MIN_PRICE[typeField.value]);
-  }
-
   // Обработчики событий
   function onTypeChange(evt) {
     evt.preventDefault();
-    setMinPriceByType();
+    priceField.setAttribute('min', MIN_PRICE[typeField.value]);
+    priceField.setAttribute('placeholder', 'от ' + MIN_PRICE[typeField.value]);
+  }
+
+  function onPriceChenge(evt) {
+    evt.preventDefault();
+    if (priceField.value < MIN_PRICE[typeField.value]) {
+      priceField.setCustomValidity(
+          'Для данного типа жилья цена не может быть ниже ' + MIN_PRICE[typeField.value] + ' рублей'
+      );
+    }
+    priceField.setCustomValidity('');
   }
 
   function onTimeoutChange(evt) {
@@ -73,38 +79,36 @@
     isСapacityValid();
   }
 
+  // Функции проверки на валидность
+  function isTitleValid() {
+    return titleField.value.length > 29;
+  }
+
+  function isAddressValid() {
+    return addressField.value === window.map.getCurrentMainPinPosition();
+  }
+
   function isСapacityValid() {
-    if (Number(roomsField.value) < Number(guestsField.value)) {
+    if (Number(roomsField.value) < Number(guestsField.value) && Number(guestsField.value) !== 0) {
       roomsField.setCustomValidity(
           'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value)
       );
-      guestsField.setCustomValidity(
-          'Столько гостей и только ' + window.utils.roomsToString(roomsField.value) + ', многовато'
-      );
       return false;
     }
-    if (Number(roomsField.value) === 100 && guestsField.value > 0) {
-      guestsField.setCustomValidity('');
-      roomsField.setCustomValidity('Данный вариант размещения не для гостей');
-      return false;
-    }
-    if (Number(guestsField.value) === 0 && Number(roomsField.value) !== 100) {
-      roomsField.setCustomValidity('');
-      guestsField.setCustomValidity('Не для гостей есть специальный варинт размещения');
+    if (Number(roomsField.value) === 100 ^ (Number(guestsField.value) === 0)) {
+      roomsField.setCustomValidity('Вариант 100 комнат - не для гостей');
       return false;
     }
     roomsField.setCustomValidity('');
-    guestsField.setCustomValidity('');
     return true;
   }
 
   function isPricingValid() {
-    setMinPriceByType();
-    return priceField.validity;
+    return Number(priceField.value) >= MIN_PRICE[typeField.value];
   }
 
   function isFormValid() {
-    return isСapacityValid() && isPricingValid();
+    return isTitleValid() && isAddressValid() && isСapacityValid() && isPricingValid();
   }
 
   function onSubmit(evt) {
@@ -116,6 +120,7 @@
 
   function onSendSuccess() {
     addForm.reset();
+    setMainPinAddress(window.map.getCurrentMainPinPosition());
     window.map.resetMap(); // удалить метки и карточку
     window.utils.showSuccessMessage(); // показать сообщение об успехе
   }
@@ -126,6 +131,7 @@
 
   // Назначаем обработчики элементам
   typeField.addEventListener('change', onTypeChange);
+  priceField.addEventListener('change', onPriceChenge);
   timeinField.addEventListener('change', onTimeinChange);
   timeoutField.addEventListener('change', onTimeoutChange);
   roomsField.addEventListener('change', onRoomsChange);
