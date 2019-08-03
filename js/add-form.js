@@ -17,6 +17,9 @@
   var typeField = document.querySelector('#type');
   var timeinField = document.querySelector('#timein');
   var timeoutField = document.querySelector('#timeout');
+  var roomsField = document.querySelector('#room_number');
+  var guestsField = document.querySelector('#capacity');
+  var submitBtn = addForm.querySelector('.ad-form__submit');
 
   // Разблокирует формы
   function enableForms() {
@@ -60,10 +63,41 @@
     timeoutField.value = evt.target.value;
   }
 
+  function onRoomsChange(evt) {
+    evt.preventDefault();
+    checkCapacityValidity();
+  }
+
+  function onGuestsChange(evt) {
+    evt.preventDefault();
+    checkCapacityValidity();
+  }
+
+  function checkCapacityValidity() {
+    if (Number(roomsField.value) < Number(guestsField.value)) {
+      roomsField.setCustomValidity('Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value));
+      return false;
+    }
+    if (Number(roomsField.value) === 100 && guestsField.value > 0) {
+      roomsField.setCustomValidity('Данный вариант размещения не для гостей');
+      return false;
+    }
+    roomsField.setCustomValidity('');
+    return true;
+  }
+
+  function onSubmitClick() {
+    checkCapacityValidity();
+  }
+
   // Назначаем обработчики элементам
   typeField.addEventListener('change', onTypeChange);
   timeinField.addEventListener('change', onTimeinChange);
   timeoutField.addEventListener('change', onTimeoutChange);
+  timeoutField.addEventListener('change', onTimeoutChange);
+  roomsField.addEventListener('change', onRoomsChange);
+  guestsField.addEventListener('change', onGuestsChange);
+  submitBtn.addEventListener('click', onSubmitClick);
 
   // Инициализация формы
   setMinPriceByType(); // Устанавливаем ограничение стоимости жилья
