@@ -8,6 +8,8 @@
     middle: {from: 10000, to: 50000},
     high: {from: 50000, to: Infinity}
   };
+  var DEBOUNCE_TIME = 500;
+  var lastTimeout;
 
   function apply() {
     var filters = getFiltersObject();
@@ -52,7 +54,10 @@
 
   filtersForm.addEventListener('change', function (evt) {
     evt.preventDefault();
-    apply();
+    window.clearTimeout(lastTimeout);
+    lastTimeout = setTimeout(function () {
+      apply();
+    }, DEBOUNCE_TIME);
   });
 
   window.filters = {
