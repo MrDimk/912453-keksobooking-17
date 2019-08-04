@@ -8,11 +8,11 @@
     middle: {from: 10000, to: 50000},
     high: {from: 50000, to: Infinity}
   };
-  var DEBOUNCE_TIME = 500;
-  var lastTimeout;
 
   function apply() {
     var filters = getFiltersObject();
+
+
     var result = window.data.adsDataArray.slice().filter(function (data) {
       return (
         (filters.type === 'any' || data.offer.type === filters.type) &&
@@ -54,10 +54,7 @@
 
   filtersForm.addEventListener('change', function (evt) {
     evt.preventDefault();
-    window.clearTimeout(lastTimeout);
-    lastTimeout = setTimeout(function () {
-      apply();
-    }, DEBOUNCE_TIME);
+    window.utils.setDebounse(apply);
   });
 
   window.filters = {
