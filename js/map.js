@@ -43,10 +43,14 @@
     return newPinNode;
   }
 
-  function onPinClick(data) {
+  function hideCard() {
     if (activeCard) {
       activeCard.remove();
     }
+  }
+
+  function onPinClick(data) {
+    hideCard();
     activeCard = createCard(data);
   }
 
@@ -179,7 +183,7 @@
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
     resetMap: resetMap,
-    activeCard: activeCard,
+    hideCard: hideCard,
     settings: {
       PINS_COORD_Y_MIN: PINS_COORD_Y_MIN,
       PINS_COORD_Y_MAX: PINS_COORD_Y_MAX,
