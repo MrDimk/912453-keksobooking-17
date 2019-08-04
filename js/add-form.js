@@ -89,18 +89,15 @@
   }
 
   function isСapacityValid() {
+    var message = '';
     if (Number(roomsField.value) < Number(guestsField.value) && Number(guestsField.value) !== 0) {
-      roomsField.setCustomValidity(
-          'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value)
-      );
-      return false;
+      message = 'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value);
     }
-    if (Number(roomsField.value) === 100 ^ (Number(guestsField.value) === 0)) {
-      roomsField.setCustomValidity('Вариант 100 комнат - не для гостей');
-      return false;
+    if ((Number(roomsField.value) === 100) ^ (Number(guestsField.value) === 0)) {
+      message = 'Вариант 100 комнат - не для гостей';
     }
-    roomsField.setCustomValidity('');
-    return true;
+    roomsField.setCustomValidity(message);
+    return !message;
   }
 
   function isPricingValid() {
