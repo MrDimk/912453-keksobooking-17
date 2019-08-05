@@ -2,7 +2,7 @@
 
 (function () {
   var filtersForm = document.querySelector('.map__filters');
-  var displayedPinsNumber = 5;
+  var DISPLAYED_PINS_NUMBER = 5;
   var PRICE_RANGES = {
     low: {from: 0, to: 10000},
     middle: {from: 10000, to: 50000},
@@ -33,7 +33,7 @@
 
     if (result.length > 0) {
       window.map.appendPinsFromDataArray(
-          result.length > 5 ? result.slice(0, displayedPinsNumber) : result
+          result.length > 5 ? result.slice(0, DISPLAYED_PINS_NUMBER) : result
       );
     }
   }

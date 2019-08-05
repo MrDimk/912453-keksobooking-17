@@ -20,14 +20,14 @@
   }
 
   // Разблокирует элемент формы
-  var enableElement = function (element) {
+  function enableElement(element) {
     element.removeAttribute('disabled');
-  };
+  }
 
   // Блокирует элемент формы
-  var disableElement = function (element) {
+  function disableElement(element) {
     element.setAttribute('disabled', 'disabled');
-  };
+  }
 
   function showError(message, onButtonPress, buttonText) {
     var errorBlock = document.createDocumentFragment();

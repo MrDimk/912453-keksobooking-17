@@ -7,19 +7,23 @@
     house: 5000,
     palace: 10000
   };
+  var MAX_PRICE = 1000000;
+  var MIN_TITLE_LENGTH = 30;
+  var MAX_TITLE_LENGTH = 100;
 
   // Формы и элементы форм
   var addForm = document.querySelector('.ad-form');
-  var addFormHeader = document.querySelector('.ad-form-header');
-  var addFormElements = document.querySelectorAll('.ad-form__element');
-  var addressField = document.querySelector('#address');
-  var priceField = document.querySelector('#price');
-  var titleField = document.querySelector('#title');
-  var typeField = document.querySelector('#type');
-  var timeinField = document.querySelector('#timein');
-  var timeoutField = document.querySelector('#timeout');
-  var roomsField = document.querySelector('#room_number');
-  var guestsField = document.querySelector('#capacity');
+  var addFormHeader = addForm.querySelector('.ad-form-header');
+  var addFormElements = addForm.querySelectorAll('.ad-form__element');
+  var addressField = addForm.querySelector('#address');
+  var priceField = addForm.querySelector('#price');
+  var titleField = addForm.querySelector('#title');
+  var typeField = addForm.querySelector('#type');
+  var timeinField = addForm.querySelector('#timein');
+  var timeoutField = addForm.querySelector('#timeout');
+  var roomsField = addForm.querySelector('#room_number');
+  var guestsField = addForm.querySelector('#capacity');
+  var formResetBtn = addForm.querySelector('.ad-form__reset');
 
   // Разблокирует формы
   function enableForms() {
@@ -34,7 +38,7 @@
     addForm.classList.add('ad-form--disabled');
     window.utils.disableElement(addFormHeader);
     addFormElements.forEach(window.utils.disableElement);
-    window.main.isPageActive = false;
+    window.utils.settings.isPageActive = false;
   }
 
   // Записывает текущие координаты главной метки в поле "Адрес" формы
@@ -81,7 +85,7 @@
 
   // Функции проверки на валидность
   function isTitleValid() {
-    return titleField.value.length > 29;
+    return titleField.value.length >= MIN_TITLE_LENGTH && titleField.value.length <= MAX_TITLE_LENGTH;
   }
 
   function isAddressValid() {
@@ -91,7 +95,8 @@
   function isСapacityValid() {
     var message = '';
     if (Number(roomsField.value) < Number(guestsField.value) && Number(guestsField.value) !== 0) {
-      message = 'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value);
+      message =
+        'Столько комнат не достаточно для ' + window.utils.guestsToString(guestsField.value);
     }
     if ((Number(roomsField.value) === 100) ^ (Number(guestsField.value) === 0)) {
       message = 'Вариант 100 комнат - не для гостей';
@@ -101,7 +106,8 @@
   }
 
   function isPricingValid() {
-    return Number(priceField.value) >= MIN_PRICE[typeField.value];
+    return Number(priceField.value) >= MIN_PRICE[typeField.value] &&
+      Number(priceField.value) <= MAX_PRICE;
   }
 
   function isFormValid() {
@@ -113,6 +119,13 @@
     if (isFormValid()) {
       window.backend.send(new FormData(addForm), onSendSuccess, onSendError);
     }
+  }
+
+  function onRestetBtnClick(evt) {
+    evt.preventDefault();
+    window.map.resetMap();
+    addForm.reset();
+    disableForms();
   }
 
   function onSendSuccess() {
@@ -134,6 +147,7 @@
   roomsField.addEventListener('change', onRoomsChange);
   guestsField.addEventListener('change', onGuestsChange);
   addForm.addEventListener('submit', onSubmit);
+  formResetBtn.addEventListener('click', onRestetBtnClick);
 
   // Инициализация формы
   setMainPinAddress(window.map.getCurrentMainPinPosition()); // Заполняем поле адреса координатами середины главной метки
