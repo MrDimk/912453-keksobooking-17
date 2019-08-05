@@ -2,39 +2,59 @@
 
 (function () {
   var filtersForm = document.querySelector('.map__filters');
-  var displayedPinsNumber = 5;
-
-  // Типы фильтров и функции-обработчики для каждого из них
-  var filterTypes = {
-    'number': function (data) {
-      return data.slice(0, Math.min(displayedPinsNumber, data.length));
-    },
-    'housing-type': function (data, formElement) {
-      return data.filter(function (element) {
-        return formElement.value === 'any' || element.offer.type === formElement.value;
-      });
-    }
+  var DISPLAYED_PINS_NUMBER = 5;
+  var PRICE_RANGES = {
+    low: {from: 0, to: 10000},
+    middle: {from: 10000, to: 50000},
+    high: {from: 50000, to: Infinity}
   };
 
-  // Применение фильтров - для каждого элемента формы ищем по имени обработчик,
-  // если не находим - массив с данными не модифицируем
   function apply() {
-    var result = window.data.adsDataArray.slice();
-    Array.from(filtersForm).forEach(function (formElement) {
-      try {
-        result = filterTypes[formElement.name](result, formElement);
-      } catch (error) {
-        // тут можно поругаться в консоли что поле фильтра нам не знакомо, но это не понравится Трэвису
-        // console.log('Нет опработчика фильтра для поля:' + formElement.name);
-      }
+    var filters = getFiltersObject();
+
+
+    var result = window.data.adsDataArray.slice().filter(function (data) {
+      return (
+        (filters.type === 'any' || data.offer.type === filters.type) &&
+        (filters.price === 'any' ||
+          (data.offer.price >= PRICE_RANGES[filters.price].from &&
+            data.offer.price < PRICE_RANGES[filters.price].to)) &&
+        (filters.rooms === 'any' || data.offer.rooms === Number(filters.rooms)) &&
+        (filters.guests === 'any' || data.offer.guests === Number(filters.guests)) &&
+        (filters.features.length === 0 ||
+          filters.features.every(function (val) {
+            return data.offer.features.includes(val);
+          }))
+      );
     });
+
     window.map.removePinsFromMap();
-    window.map.appendPinsFromDataArray(filterTypes['number'](result)); // фильтр по количеству может быть легко добавлен в форму
+    window.map.hideCard();
+
+    if (result.length > 0) {
+      window.map.appendPinsFromDataArray(
+          result.length > 5 ? result.slice(0, DISPLAYED_PINS_NUMBER) : result
+      );
+    }
+  }
+
+  function getFiltersObject() {
+    return {
+      type: filtersForm.querySelector('#housing-type').value,
+      price: filtersForm.querySelector('#housing-price').value,
+      rooms: filtersForm.querySelector('#housing-rooms').value,
+      guests: filtersForm.querySelector('#housing-guests').value,
+      features: (function (formElement) {
+        return Array.from(formElement.querySelectorAll('input:checked')).map(function (element) {
+          return element.value;
+        });
+      })(filtersForm.querySelector('#housing-features'))
+    };
   }
 
   filtersForm.addEventListener('change', function (evt) {
     evt.preventDefault();
-    apply();
+    window.utils.setDebounse(apply);
   });
 
   window.filters = {

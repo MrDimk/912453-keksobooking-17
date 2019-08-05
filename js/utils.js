@@ -4,6 +4,15 @@
   // Флаги и состояния
   var ESC_KEY = 27;
   var isPageActive = false;
+  var DEBOUNCE_TIME = 500;
+  var lastTimeout;
+
+  function setDebounse(callback) {
+    window.clearTimeout(lastTimeout);
+    lastTimeout = setTimeout(function () {
+      callback();
+    }, DEBOUNCE_TIME);
+  }
 
   // Возвращает случайный элемент массива
   function getRandomArrayElement(array) {
@@ -11,14 +20,14 @@
   }
 
   // Разблокирует элемент формы
-  var enableElement = function (element) {
+  function enableElement(element) {
     element.removeAttribute('disabled');
-  };
+  }
 
   // Блокирует элемент формы
-  var disableElement = function (element) {
+  function disableElement(element) {
     element.setAttribute('disabled', 'disabled');
-  };
+  }
 
   function showError(message, onButtonPress, buttonText) {
     var errorBlock = document.createDocumentFragment();
@@ -100,6 +109,7 @@
 
   window.utils = {
     ESC_KEY: ESC_KEY,
+    setDebounse: setDebounse,
     getRandomArrayElement: getRandomArrayElement,
     enableElement: enableElement,
     disableElement: disableElement,

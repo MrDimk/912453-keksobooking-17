@@ -29,7 +29,7 @@
 
     var dragged = false;
 
-    var onMouseMove = function (moveEvt) {
+    function onMouseMove(moveEvt) {
       moveEvt.preventDefault();
       dragged = true;
 
@@ -64,9 +64,9 @@
       pin.style.left = resultX + 'px';
 
       window.addForm.setMainPinAddress(window.map.getCurrentMainPinPosition());
-    };
+    }
 
-    var onMouseUp = function (upEvt) {
+    function onMouseUp(upEvt) {
       upEvt.preventDefault();
 
       document.removeEventListener('mousemove', onMouseMove);
@@ -79,7 +79,7 @@
         };
         pin.addEventListener('click', onClickPreventDefault);
       }
-    };
+    }
 
     document.addEventListener('mousemove', onMouseMove);
     document.addEventListener('mouseup', onMouseUp);
