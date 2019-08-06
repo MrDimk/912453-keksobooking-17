@@ -3,6 +3,9 @@
 (function () {
   var URL = 'https://js.dump.academy/keksobooking/data'; // адрес для загрузки данных
   var URL_SEND = 'https://js.dump.academy/keksobooking'; // адрес для отправки данных
+  var HTTP_STATUS_CODES = {
+    OK: '200'
+  };
 
   function load(onSuccess, onError) {
     var xhr = new XMLHttpRequest();
@@ -11,7 +14,7 @@
     xhr.addEventListener('load', function (evt) {
       evt.preventDefault();
       switch (xhr.status) {
-        case 200:
+        case HTTP_STATUS_CODES.OK:
           onSuccess(xhr.response);
           break;
         default:
@@ -28,7 +31,7 @@
     xhr.addEventListener('load', function (evt) {
       evt.preventDefault();
       switch (xhr.status) {
-        case 200:
+        case HTTP_STATUS_CODES.OK:
           onSuccess(xhr.response);
           break;
         default:

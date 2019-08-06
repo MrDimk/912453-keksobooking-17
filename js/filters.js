@@ -54,7 +54,7 @@
 
   filtersForm.addEventListener('change', function (evt) {
     evt.preventDefault();
-    window.utils.setDebounse(apply);
+    window.utils.setDebounce(apply);
   });
 
   window.filters = {

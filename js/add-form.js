@@ -155,7 +155,6 @@
   // Экспорт
   window.addForm = {
     enableForms: enableForms,
-    disableForms: disableForms,
     setMainPinAddress: setMainPinAddress
   };
 })();

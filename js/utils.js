@@ -7,16 +7,11 @@
   var DEBOUNCE_TIME = 500;
   var lastTimeout;
 
-  function setDebounse(callback) {
+  function setDebounce(callback) {
     window.clearTimeout(lastTimeout);
     lastTimeout = setTimeout(function () {
       callback();
     }, DEBOUNCE_TIME);
-  }
-
-  // Возвращает случайный элемент массива
-  function getRandomArrayElement(array) {
-    return array[Math.floor(Math.random() * array.length)];
   }
 
   // Разблокирует элемент формы
@@ -109,8 +104,7 @@
 
   window.utils = {
     ESC_KEY: ESC_KEY,
-    setDebounse: setDebounse,
-    getRandomArrayElement: getRandomArrayElement,
+    setDebounce: setDebounce,
     enableElement: enableElement,
     disableElement: disableElement,
     showError: showError,

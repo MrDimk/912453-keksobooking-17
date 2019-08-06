@@ -209,11 +209,9 @@
 
   window.map = {
     activateMap: activateMap,
-    deactivateMap: deactivateMap,
     getCurrentMainPinPosition: getCurrentMainPinPosition,
     appendPinsFromDataArray: appendPinsFromDataArray,
     removePinsFromMap: removePinsFromMap,
-    createCard: createCard,
     mapBlock: mapBlock,
     mapPinMain: mapPinMain,
     resetMap: resetMap,
