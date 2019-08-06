@@ -126,10 +126,14 @@
     window.map.resetMap();
     addForm.reset();
     disableForms();
+    window.photo.resetAvatarPreview();
+    window.photo.resetPhotosPreview();
   }
 
   function onSendSuccess() {
     addForm.reset();
+    window.photo.resetAvatarPreview();
+    window.photo.resetPhotosPreview();
     setMainPinAddress(window.map.getCurrentMainPinPosition());
     window.map.resetMap(); // удалить метки и карточку
     window.utils.showSuccessMessage(); // показать сообщение об успехе

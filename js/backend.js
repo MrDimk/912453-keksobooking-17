@@ -4,7 +4,7 @@
   var URL = 'https://js.dump.academy/keksobooking/data'; // адрес для загрузки данных
   var URL_SEND = 'https://js.dump.academy/keksobooking'; // адрес для отправки данных
   var HTTP_STATUS_CODES = {
-    OK: '200'
+    OK: 200
   };
 
   function load(onSuccess, onError) {
