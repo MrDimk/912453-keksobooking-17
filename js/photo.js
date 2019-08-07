@@ -8,13 +8,12 @@
     HEIGHT: 70
   };
   var MAX_PHOTOS_TO_UPLOAD = 5;
-  var photosCounter = 0;
 
   var avatarPreview = document.querySelector('.ad-form-header__preview img');
   var avatarFileChooser = document.querySelector('#avatar');
 
   var photoPreviewContainer = document.querySelector('.ad-form__photo-container');
-  var photoPreviewElement = document.querySelector('.ad-form__photo');
+  var photoPreviewSelector = '.ad-form__photo';
   var photosFileChooser = document.querySelector('#images');
 
   function checkImgFormat(fileName) {
@@ -35,47 +34,68 @@
     }
   }
 
+  // Сброс аватарки до изначального состояния
+  function resetAvatarPreview() {
+    avatarPreview.src = DEFAULT_AVATAR;
+    avatarFileChooser.value = '';
+  }
+
+  // Создание пустого контейнера для фото жилья
+  function getSinglePhotoBlock() {
+    var block = document.createElement('div');
+    block.classList.add(photoPreviewSelector.replace('.', ''));
+
+    return block;
+  }
+
   // Загрузка превью фотографий
   function createPhotoPreview(source) {
+    var result = getSinglePhotoBlock();
     var imgElement = document.createElement('img');
     imgElement.src = source;
     imgElement.width = PHOTO_PREVIEW.WIDTH;
     imgElement.height = PHOTO_PREVIEW.WIDTH;
     imgElement.alt = 'Фотография жилья';
-    var result = photoPreviewElement.cloneNode();
+
     result.appendChild(imgElement);
+
     return result;
+  }
+
+  // Удаление предыдущих фото
+  function removePhotosPreview() {
+    var previews = photoPreviewContainer.querySelectorAll(photoPreviewSelector);
+    Array.from(previews).forEach(function (it) {
+      it.remove();
+    });
+  }
+
+  // Сброс фото жилья до изначального состояния
+  function resetPhotosPreview() {
+    removePhotosPreview();
+    photoPreviewContainer.appendChild(getSinglePhotoBlock());
+    photosFileChooser.value = '';
   }
 
   // Показ превью фотографий - обработчик по выбору файлов
   function onFilesChoose() {
-    if (photosCounter === 0) {
-      photoPreviewContainer.querySelector('.ad-form__photo').remove();
-    }
     var files = photosFileChooser.files;
-    Array.from(files).forEach(function (file) {
-      if (checkImgFormat(file.name) && photosCounter < MAX_PHOTOS_TO_UPLOAD) {
-        var reader = new FileReader();
-        reader.addEventListener('load', function () {
-          photoPreviewContainer.appendChild(createPhotoPreview(reader.result));
-        });
-        reader.readAsDataURL(file);
+    var count = Math.min(files.length, MAX_PHOTOS_TO_UPLOAD);
+
+    removePhotosPreview();
+    for (var i = 0; i < count; i++) {
+      if (checkImgFormat(files[i].name)) {
+        renderFile(files[i]);
       }
-      photosCounter++;
-    });
-  }
+    }
 
-  function resetAvatarPreview() {
-    avatarPreview.src = DEFAULT_AVATAR;
-  }
-
-  function resetPhotosPreview() {
-    var previews = photoPreviewContainer.querySelectorAll('.ad-form__photo');
-    Array.from(previews).forEach(function (it) {
-      it.remove();
-    });
-    photoPreviewContainer.appendChild(photoPreviewElement.cloneNode());
-    photosCounter = 0;
+    function renderFile(file) {
+      var reader = new FileReader();
+      reader.addEventListener('load', function () {
+        photoPreviewContainer.appendChild(createPhotoPreview(reader.result));
+      });
+      reader.readAsDataURL(file);
+    }
   }
 
   photosFileChooser.setAttribute('multiple', 'true');
